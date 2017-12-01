@@ -1,0 +1,11 @@
+{
+  "SV.lumpy_script": "/PHShome/hw878/Software/lumpy-sv/Lumpy.sh",
+  "SV.chrlist": "File",
+  "SV.pre_melt": "/data/talkowski/hw878/Standard_workflow/SVcallers/scripts/pre_melt.py",
+  "SV.blacklist": "File",
+  "SV.reffasta": "String",
+  "SV.list": "File",
+  "SV.mantascript": "/PHShome/hw878/Software/Manta/Manta.sh",
+  "SV.cnvnatorscript":"/PHShome/hw878/Software/CNVnator/CNVnator.sh",
+  "SV.refindex": "File"
+}

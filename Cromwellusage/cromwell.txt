@@ -1,0 +1,13 @@
+#How to use these wdl scripts
+#Use /data/talkowski/hw878/Prenatal/Wham as example
+#Assume we're trying to use /data/talkowski/hw878/Standard_workflow/SVcallers/Wham/Wham_trio.wdl
+First make sure you have java 1.8
+#Step 1 validation
+java -jar /PHShome/hw878/WDL_workflow/wdltool-0.12.jar validate /data/talkowski/hw878/Standard_workflow/SVcallers/Wham/Wham_trio.wdl
+#if there is no output, then the wdl file is without errors, proceed to generate input json file
+java -jar /PHShome/hw878/WDL_workflow/wdltool-0.12.jar inputs /data/talkowski/hw878/Standard_workflow/SVcallers/Wham/Wham_trio.wdl > inputs.json
+# Fill out the needed information in the json file, for example see (/data/talkowski/hw878/Prenatal/Wham/Prenatal_wham.json)
+# Now, write a LSF file to submit job to LSF, for example see (/data/talkowski/hw878/Prenatal/Wham/Prenatal_wham.lsf). Change ```#BSUB -J prenatal_wham``` to change LSF job name (optional), also change the actual command line below
+java -Dconfig.file=/PHShome/hw878/WDL_workflow/reference.conf -Xmx8000m -jar /PHShome/hw878/WDL_workflow/cromwell-29.jar run /data/talkowski/hw878/Standard_workflow/SVcallers/Wham/Wham_trio.wdl -i Prenatal_wham.json
+# change the *.wdl file to the one user intends to run, and change json file to the one generated in step2
+# submit the lsf file using bsub -q big -sla miket_sc < *.lsf
