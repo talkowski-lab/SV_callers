@@ -18,7 +18,7 @@ task RunCNVnator{
         ${CNVnatorscript} -b ${BamFile} -o ${SampleName}.cnvnator
     }
     output {
-        File output = "${SampleName}.cnvnator"
+        File out = "${SampleName}.cnvnator"
     }
   runtime {
     memory: "8 GB"
