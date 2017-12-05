@@ -15,7 +15,6 @@ task RunManta{
     String S1
     String RefFasta
     command{
-        source deactivate cacila
         ${MantaScript} -b ${Fa},${Mo},${P1},${S1} -r ${RefFasta}
     }
   runtime {
