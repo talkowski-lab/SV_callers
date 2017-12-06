@@ -1,5 +1,5 @@
 workflow MELT{
-    String MELT
+    String MELT # now this is a directory
     File Famlist
     Array[Array[String]] Families=read_tsv(Famlist)
     File FASTA
@@ -24,8 +24,9 @@ workflow MELT{
                                 Type="LINE1",
                                 Fadir=FaIdv.Dir,Modir=MoIdv.Dir,P1dir=P1Idv.Dir,
                                 Fasta=FASTA,FastaIndex=FASTAINDEX}
+        call combine{input:SVA=SVAgeno.Meltresult,ALU=ALUgeno.Meltresult,LINE1=LINE1geno.Meltresult,Fam=Family[0],Father=Family[1],Mother=Family[2],Proband=Family[3]}
     }
-    
+    call gatherfile{input:files=combine.Melt,index=combine.Index}
 }
 task preprocess{
     String Melt
@@ -37,7 +38,7 @@ task preprocess{
     command{
         ln ${BamFile} ${Fam}${Role}.bam
         ln ${BamFile}.bai ${Fam}${Role}.bam.bai
-        java -jar ${Melt} Preprocess ${Fam}${Role}.bam ${Fasta}
+        java -jar ${Melt}/MELT.jar Preprocess ${Fam}${Role}.bam ${Fasta}
         mv ${Fam}${Role}.bam.disc.bam.bai ${Fam}${Role}.bam.disc.bai
         str=`pwd`/${Fam}${Role}.bam
         echo $str>out.tmp
@@ -64,9 +65,9 @@ task IndivAnalysis{
     command{
         mkdir Work
         mkdir Work/me_refs/
-        cp /scratch/miket/jtg24/MELT/backup/MELTv2.0.2/me_refs/Hg38/*.zip Work/me_refs/.
+        cp ${Melt}/me_refs/Hg38/*.zip Work/me_refs/.
         ls Work/me_refs/*.zip >Work/me_refs/mei_list.txt
-        java -Xmx6G -jar ${Melt} IndivAnalysis -c ${Picard} -l ${Bamdir} -w Work -t Work/me_refs/mei_list.txt -h ${Fasta}
+        java -Xmx6G -jar ${Melt}/MELT.jar IndivAnalysis -c ${Picard} -l ${Bamdir} -w Work -t Work/me_refs/mei_list.txt -h ${Fasta}
         mkdir ALU
         mkdir LINE1
         mkdir SVA
@@ -104,16 +105,16 @@ task genotype{
         ln ${Fadir}/${Type}/* ${Type}/
         ln ${Modir}/${Type}/* ${Type}/
         ln ${P1dir}/${Type}/* ${Type}/
-        java -Xmx2G -jar ${Melt} GroupAnalysis -l ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n /data/talkowski/hw878/AWS/melt/MELTv2.0.2/add_bed_files/1KGP_Hg19/hg19.genes.bed     
-        java -Xmx2G -jar ${Melt} Genotype -l ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt} Genotype -l ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt} Genotype -l ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -l ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/Hg38/Hg38.genes.bed     
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         ls ${Type}/*.${Type}.tsv > ${Type}/list.txt
-        java -Xmx2G -jar ${Melt} MakeVCF -f ${Type}/list.txt -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
-        cp ${Type}/${Type}.final_comp.vcf .
+        java -Xmx2G -jar ${Melt}/MELT.jar MakeVCF -f ${Type}/list.txt -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
+        cp ${Type}/${Type}.final_comp.vcf ${Fam}.${Type}.melt.vcf
     }
     output{
-        File vcf="${Type}.final_comp.vcf"
+        File Meltresult="${Fam}.${Type}.melt.vcf"
     }
     runtime {
         memory: "16 GB"
@@ -121,5 +122,49 @@ task genotype{
         queue: "big"
         sla: "-sla miket_sc"
         sp: "-sp 90"
+    }
+}
+task combine{
+    String Fam
+    String Father
+    String Mother
+    String Proband
+    String Fa = basename(Father, ".bam")
+    String Mo = basename(Mother, ".bam")
+    String P1 = basename(Proband, ".bam")
+    File ALU
+    File SVA
+    File LINE1
+    command {
+        cat ${SVA} |grep "#" > ${Fam}.header.txt
+        cat ${SVA} |grep -v "#" > ${Fam}.sva.vcf
+        cat ${LINE1} |grep -v "#"> ${Fam}.line1.vcf
+        cat ${ALU} |grep -v "#"> ${Fam}.alu.vcf
+        cat ${Fam}.header.txt ${Fam}.sva.vcf ${Fam}.line1.vcf ${Fam}.alu.vcf |sed 's/${Fam}fa/${Fa}/g'|sed 's/${Fam}mo/${Mo}/g'|sed 's/${Fam}p1/${P1}/g' | vcf-sort -c |bgzip -c > melt.${Fam}.vcf.gz
+        tabix -p vcf melt.${Fam}.vcf.gz
+    }
+    runtime{
+        cpu: "1"
+        memory: "4 GB"
+        queue: "short"
+        sla: "-sla miket_sc"
+    }
+    output{
+        File Melt="melt.${Fam}.vcf.gz"
+        File Index="melt.${Fam}.vcf.gz.tbi"
+    }
+}
+task gatherfile{
+    Array[File] files
+    Array[File] index
+    command <<<
+        mkdir results
+        cp {${sep="," files}} {${sep="," index}} results
+    >>>
+    runtime{
+        cpu: "1"
+        memory: "4 GB"
+        queue: "short"
+        sla: "-sla miket_sc"
     }
 }

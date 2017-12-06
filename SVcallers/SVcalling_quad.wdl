@@ -17,6 +17,7 @@ workflow SV{
     File cnvnatorscript
     String mantascript
     File refindex
+    String melt
     File lumpy_script
     call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
     call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}

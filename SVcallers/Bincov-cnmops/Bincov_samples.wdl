@@ -6,14 +6,21 @@ workflow BC_sample{
     scatter(Chr in Chrs){
         call BincovChr{input: Bamfile=bamfile,chr=Chr[0]}
     }
+    output{
+        Array[File] bc =BincovChr.bc
+    }
 }
 
 task BincovChr{
     String Bamfile
     # String sample
+    String Name=basename(Bamfile,".bam")
     String chr
     command{
-        python /PHShome/hw878/Software/WGD/bin/binCov.py ${Bamfile} ${chr} $(basename ${Bamfile} .bam)_${chr}.bed -b 100 -z
+        python /PHShome/hw878/Software/WGD/bin/binCov.py ${Bamfile} ${chr} ${Name}_${chr}.bed -b 100 -z
+    }
+    output{
+        File bc="${Name}_${chr}.bed.gz"
     }
     runtime {
         memory: "8 GB"

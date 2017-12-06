@@ -8,4 +8,22 @@ workflow Bincov {
         call BCsample.BC_sample as BCmother {input: bamfile=Fam[2],Chrlist=CHRLIST}
         call BCsample.BC_sample as BCproband {input: bamfile=Fam[3],Chrlist=CHRLIST}
     }
+    call gather{input:Fa=BCfather.bc,Mo=BCmother.bc,P1=BCproband.bc}
+}
+task gather{
+    Array[Array[File]] Fa
+    Array[Array[File]] Mo
+    Array[Array[File]] P1
+    command<<<
+        mkdir Bincov_results
+        cp {${sep="," Fa}} Bincov_results
+        cp {${sep="," Mo}} Bincov_results
+        cp {${sep="," P1}} Bincov_results
+    >>>
+    runtime {
+        memory: "4 GB"
+        cpu: "1"
+        queue:"short"
+        sla:"-sla miket_sc"
+    }
 }
