@@ -18,7 +18,7 @@ task RunManta{
     command{
         ${MantaScript} -b ${Fa},${Mo},${P1} -r ${RefFasta}
         cp results/variants/diploidSV.vcf.gz manta.${Fam}.vcf.gz
-        tabix lumpy.${SampleName}.vcf.gz
+        cp results/variants/diploidSV.vcf.gz.tbi manta.${Fam}.vcf.gz.tbi
         
     }
     output{
