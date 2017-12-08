@@ -19,13 +19,13 @@ workflow SV{
     File refindex
     File lumpy_script
     String melt
-    # call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
-    # call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
-    # call Manta.Manta{input:REFFASTA=reffasta,LIST=list,MANTASCRIPT=mantascript}
-    # call Cnvnator.Cnvnator{input:Cnvnator=cnvnatorscript,LIST=list}
+    call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
+    call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
+    call Manta.Manta{input:REFFASTA=reffasta,LIST=list,MANTASCRIPT=mantascript}
+    call Cnvnator.Cnvnator{input:Cnvnator=cnvnatorscript,LIST=list}
     call Bincov.Bincov{input:Filelist=list,CHRLIST=chrlist}
-    # call collect.Collectpesr{input:LIST=list,Chrlist=chrlist}
-    # call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
-    # call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
-    # call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
+    call collect.Collectpesr{input:LIST=list,Chrlist=chrlist}
+    call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
+    call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
+    call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
 }

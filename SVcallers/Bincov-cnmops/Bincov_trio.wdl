@@ -20,9 +20,9 @@ task gather{
     Array[File] P1
     command<<<
         mkdir Bincov_results
-        cp {${sep="," Fa}} Bincov_results
-        cp {${sep="," Mo}} Bincov_results
-        cp {${sep="," P1}} Bincov_results
+        cp {${sep="," Fa},} Bincov_results
+        cp {${sep="," Mo},} Bincov_results
+        cp {${sep="," P1},} Bincov_results
         str=`readlink -f Bincov_results`
         echo $str>out.tmp
     >>>

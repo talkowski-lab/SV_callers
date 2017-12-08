@@ -20,7 +20,7 @@ task WGSpicard{
     command{
         java -Xmx8000m -jar /PHShome/hw878/Software/Picard/picard.jar CollectWgsMetrics \
             I=${Bamfile} \
-            O=${BamName} \
+            O=${BamName}.wgs \
             VALIDATION_STRINGENCY=LENIENT\
             R=${RefFasta} 
     }
@@ -37,17 +37,17 @@ task WGSpicard{
 task genMELTfam{
     File List
     String ListName=basename(List,".fam")
-    File Faresult
-    File Moresult
-    File P1result
+    Array[File] Faresult
+    Array[File] Moresult
+    Array[File] P1result
     File pre_melt
-    command{
+    command<<<
         mkdir results
-        cp ${Faresult} results
-        cp ${Moresult} results
-        cp ${P1result} results
+        cp {${sep="," Faresult},} results
+        cp {${sep="," Moresult},} results
+        cp {${sep="," P1result},} results
         python ${pre_melt} ${List} results > ${ListName}_melt.fam
-     }
+     >>>
     runtime {
         memory: "2 GB"
         cpu: "1"
