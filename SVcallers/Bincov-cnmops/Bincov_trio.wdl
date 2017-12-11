@@ -41,7 +41,7 @@ task combine{
     command<<<
         mkdir Bincov_result
         cp {${sep="/*," Dirs}/*,} Bincov_result
-        str=`readlink -f Bincov_results`
+        str=`readlink -f Bincov_result`
         echo $str>out.tmp
     >>>
     output {
