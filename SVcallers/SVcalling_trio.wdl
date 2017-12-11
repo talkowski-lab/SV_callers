@@ -31,5 +31,5 @@ workflow SV{
     call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
     call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
     call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
-    call Cnmops.cnmops{input:DIR=Bincov.absdir,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=chrlist}
+    call Cnmops.cnmops{input:DIR=Bincov.DIR,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=chrlist}
 }
