@@ -1,0 +1,6 @@
+{
+  "cnmops.DIR": "String",
+  "cnmops.samplepy": "File",
+  "cnmops.Pedfile": "File",
+  "cnmops.Chromfile": "File"
+}

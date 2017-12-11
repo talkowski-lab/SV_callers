@@ -6,6 +6,8 @@
   "SV.reffasta": "String",
   "SV.list": "File",
   "SV.mantascript": "/PHShome/hw878/Software/Manta/Manta.sh",
+  "SV.genmatrixPyscript": "/data/talkowski/hw878/Standard_workflow/SVcallers/Cnmops/genmakemtrixinput.py",
+  "SV.sexpedfile": "/data/talkowski/xuefang/data/GMKF_HGSV_CEPH_CHM_SFARI/SV-Adjudicator/ref/GMKF_HGSV_CEPH_CHM_SFARI.fam",
   "SV.cnvnatorscript":"/PHShome/hw878/Software/CNVnator/CNVnator.sh",
   "SV.refindex": "File"
 }

@@ -46,6 +46,7 @@ task combine{
     >>>
     output {
         String absdir = read_string("out.tmp")
+        Array[File] bincov=glob("Bincov_result/*")
     }
     runtime {
         memory: "4 GB"

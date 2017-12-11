@@ -7,6 +7,7 @@ import "/data/talkowski/hw878/Standard_workflow/SVcallers/Collectpesr/collect_tr
 import "/data/talkowski/hw878/Standard_workflow/QC/Picard/Picard_trio.wdl" as Picard
 import "/data/talkowski/hw878/Standard_workflow/SVcallers/Melt/Melt_hg38_trio.wdl" as Melt
 import "/data/talkowski/hw878/Standard_workflow/SVcallers/Lumpy/Lumpy_trio.wdl" as Lumpy
+import "/data/talkowski/hw878/Standard_workflow/SVcallers/Cnmops/cnmops.wdl" as Cnmops
 
 workflow SV{
     String reffasta
@@ -18,6 +19,8 @@ workflow SV{
     String mantascript
     File refindex
     File lumpy_script
+    File genmatrixPyscript
+    File sexpedfile
     String melt
     call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
     call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
@@ -28,4 +31,5 @@ workflow SV{
     call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
     call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
     call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
+    call Cnmops.cnmops{input:DIR=Bincov.absdir,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=chrlist}
 }

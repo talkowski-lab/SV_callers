@@ -78,8 +78,8 @@ task RunLumpy{
         tabix lumpy.${SampleName}.vcf.gz
     }
     output {
-        File LumpyCall = "${SampleName}.lumpy.vcf.gz"
-        File Index = "${SampleName}.lumpy.vcf.gz.tbi"
+        File LumpyCall = "lumpy.${SampleName}.vcf.gz"
+        File Index = "lumpy.${SampleName}.vcf.gz.tbi"
     }
   runtime {
     sla: "-sla miket_sc"
