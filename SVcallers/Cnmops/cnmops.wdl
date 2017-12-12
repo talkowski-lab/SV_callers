@@ -1,22 +1,21 @@
 workflow cnmops{
     File Chromfile
+    File Allofile
     String DIR
     Array[Array[String]] Chroms =read_tsv(Chromfile)
+    Array[Array[String]] Allos =read_tsv(Allofile)
     File Pedfile
     File samplepy
     Array[Array[String]]Peds=read_tsv(Pedfile)
     scatter (Chrom in Chroms){
-        if (Chrom[0]!="X" && Chrom[0]!="Y"){
-            call CNsample_normal as Normal3{input: chr=Chrom[0],ped=Pedfile,mode="normal",r="3",dir=DIR,pyscript=samplepy}
-            call CNsample_normal as Normal10{input: chr=Chrom[0],ped=Pedfile,mode="normal",r="10",dir=DIR,pyscript=samplepy}
-        }
-        if (Chrom[0]=="X" || Chrom[0]=="Y"){
-            call CNsample_normal as Male3 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="3",dir=DIR,pyscript=samplepy}
-            call CNsample_normal as Male10 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="10",dir=DIR,pyscript=samplepy}
-            call CNsample_normal as Female3{input: chr=Chrom[0],ped=Pedfile,mode="female",r="3",dir=DIR,pyscript=samplepy}
-            call CNsample_normal as Female10{input: chr=Chrom[0],ped=Pedfile,mode="female",r="10",dir=DIR,pyscript=samplepy}
-        }
-
+        call CNsample_normal as Normal3{input: chr=Chrom[0],ped=Pedfile,mode="normal",r="3",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Normal10{input: chr=Chrom[0],ped=Pedfile,mode="normal",r="10",dir=DIR,pyscript=samplepy}
+    }
+    scatter (Allo in Allos){
+        call CNsample_normal as Male3 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="3",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Male10 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="10",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Female3{input: chr=Chrom[0],ped=Pedfile,mode="female",r="3",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Female10{input: chr=Chrom[0],ped=Pedfile,mode="female",r="10",dir=DIR,pyscript=samplepy}
     }
     call Cleancnmops{input: samplelist=Pedfile,N3=Normal3.Gff,N10=Normal10.Gff,M3=Male3.Gff,M10=Male10.Gff,F3=Female3.Gff,F10=Female10.Gff}
 }

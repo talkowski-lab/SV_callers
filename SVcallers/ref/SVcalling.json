@@ -1,6 +1,8 @@
 {
   "SV.lumpy_script": "/PHShome/hw878/Software/lumpy-sv/Lumpy.sh",
   "SV.chrlist": "File",
+  "SV.autosome": "File",
+  "SV.allosome": "File",
   "SV.pre_melt": "/data/talkowski/hw878/Standard_workflow/SVcallers/scripts/pre_melt.py",
   "SV.blacklist": "File",
   "SV.reffasta": "String",

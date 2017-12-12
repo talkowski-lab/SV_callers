@@ -22,6 +22,8 @@ workflow SV{
     File genmatrixPyscript
     File sexpedfile
     String melt
+    File autosome
+    File allosome
     call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
     call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
     call Manta.Manta{input:REFFASTA=reffasta,LIST=list,MANTASCRIPT=mantascript}
@@ -31,5 +33,5 @@ workflow SV{
     call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
     call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
     call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
-    call Cnmops.cnmops{input:DIR=Bincov.DIR,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=chrlist}
+    call Cnmops.cnmops{input:DIR=Bincov.DIR,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=autosome,Allofile=allosome}
 }

@@ -17,7 +17,7 @@ task BincovChr{
     String Name=basename(Bamfile,".bam")
     String chr
     command{
-        python /PHShome/hw878/Software/WGD/bin/binCov.py ${Bamfile} ${chr} ${Name}_${chr}.bed -b 100 -z
+        svtk bincov ${Bamfile} ${chr} ${Name}_${chr}.bed -b 100 -z
     }
     output{
         File bc="${Name}_${chr}.bed.gz"
