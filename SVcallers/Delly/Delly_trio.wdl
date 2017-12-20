@@ -12,13 +12,9 @@ workflow Delly{
                       DUPBCF=doDellyDUP.BCF,DUPCSI=doDellyDUP.CSI,
                       INVBCF=doDellyINV.BCF,INVCSI=doDellyINV.CSI,
                       TRABCF=doDellyTRA.BCF,TRACSI=doDellyTRA.CSI
-    }
-    call gather{input:files=gatherfile.Result,indexes=gatherfile.Index}
+            }
         }
-
-    # output{
-        
-    # }
+    call gather{input:files=gatherfile.Result,indexes=gatherfile.Index}
 }
 task doDelly{
     String Fa
@@ -82,8 +78,8 @@ task gather{
     Array[File] indexes
     command <<<
         mkdir results
-        cp {${sep="," files}} results
-        cp {${sep="," indexes}} results
+        cp {${sep="," files},} results
+        cp {${sep="," indexes},} results
     >>>
     runtime{
         cpu: "1"

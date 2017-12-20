@@ -38,7 +38,7 @@ task preprocess{
     command{
         ln ${BamFile} ${Fam}${Role}.bam
         ln ${BamFile}.bai ${Fam}${Role}.bam.bai
-        java -jar ${Melt}/MELT.jar Preprocess ${Fam}${Role}.bam ${Fasta}
+        java -jar ${Melt}/MELT.jar Preprocess -bamfile ${Fam}${Role}.bam -h ${Fasta}
         mv ${Fam}${Role}.bam.disc.bam.bai ${Fam}${Role}.bam.disc.bai
         str=`pwd`/${Fam}${Role}.bam
         echo $str>out.tmp
@@ -67,7 +67,7 @@ task IndivAnalysis{
         mkdir Work/me_refs/
         cp ${Melt}/me_refs/Hg38/*.zip Work/me_refs/.
         ls Work/me_refs/*.zip >Work/me_refs/mei_list.txt
-        java -Xmx6G -jar ${Melt}/MELT.jar IndivAnalysis -c ${Picard} -l ${Bamdir} -w Work -t Work/me_refs/mei_list.txt -h ${Fasta}
+        java -Xmx6G -jar ${Melt}/MELT.jar IndivAnalysis -c ${Picard} -bamfile ${Bamdir} -w Work -t Work/me_refs/mei_list.txt -h ${Fasta}
         mkdir ALU
         mkdir LINE1
         mkdir SVA
@@ -105,10 +105,10 @@ task genotype{
         ln ${Fadir}/${Type}/* ${Type}/
         ln ${Modir}/${Type}/* ${Type}/
         ln ${P1dir}/${Type}/* ${Type}/
-        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -l ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/Hg38/Hg38.genes.bed     
-        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -l ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/Hg38/Hg38.genes.bed     
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         ls ${Type}/*.${Type}.tsv > ${Type}/list.txt
         java -Xmx2G -jar ${Melt}/MELT.jar MakeVCF -f ${Type}/list.txt -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
         cp ${Type}/${Type}.final_comp.vcf ${Fam}.${Type}.melt.vcf

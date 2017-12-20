@@ -12,10 +12,10 @@ workflow cnmops{
         call CNsample_normal as Normal10{input: chr=Chrom[0],ped=Pedfile,mode="normal",r="10",dir=DIR,pyscript=samplepy}
     }
     scatter (Allo in Allos){
-        call CNsample_normal as Male3 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="3",dir=DIR,pyscript=samplepy}
-        call CNsample_normal as Male10 {input: chr=Chrom[0],ped=Pedfile,mode="male",r="10",dir=DIR,pyscript=samplepy}
-        call CNsample_normal as Female3{input: chr=Chrom[0],ped=Pedfile,mode="female",r="3",dir=DIR,pyscript=samplepy}
-        call CNsample_normal as Female10{input: chr=Chrom[0],ped=Pedfile,mode="female",r="10",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Male3 {input: chr=Allo[0],ped=Pedfile,mode="male",r="3",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Male10 {input: chr=Allo[0],ped=Pedfile,mode="male",r="10",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Female3{input: chr=Allo[0],ped=Pedfile,mode="female",r="3",dir=DIR,pyscript=samplepy}
+        call CNsample_normal as Female10{input: chr=Allo[0],ped=Pedfile,mode="female",r="10",dir=DIR,pyscript=samplepy}
     }
     call Cleancnmops{input: samplelist=Pedfile,N3=Normal3.Gff,N10=Normal10.Gff,M3=Male3.Gff,M10=Male10.Gff,F3=Female3.Gff,F10=Female10.Gff}
 }
