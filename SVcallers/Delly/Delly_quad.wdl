@@ -12,12 +12,9 @@ workflow Delly{
                       DUPBCF=doDellyDUP.BCF,DUPCSI=doDellyDUP.CSI,
                       INVBCF=doDellyINV.BCF,INVCSI=doDellyINV.CSI,
                       TRABCF=doDellyTRA.BCF,TRACSI=doDellyTRA.CSI
-    }
+            }
         }
-
-    # output{
-        
-    # }
+    call gather{input:files=gatherfile.Result,indexes=gatherfile.Index}
 }
 task doDelly{
     String Fa
@@ -67,6 +64,25 @@ task gatherfile{
         cat header.txt del.vcf dup.vcf inv.vcf tra.vcf | vcf-sort -c | bgzip -c > delly.${Fam}.vcf.gz
         tabix delly.${Fam}.vcf.gz
     }
+    output{
+        File Result="delly.${Fam}.vcf.gz"
+        File Index="delly.${Fam}.vcf.gz.tbi"
+    }
+    runtime{
+        cpu: "1"
+        memory: "4 GB"
+        queue: "short"
+        sla: "-sla miket_sc"
+    }
+}
+task gather{
+    Array[File] files
+    Array[File] indexes
+    command <<<
+        mkdir results
+        cp {${sep="," files},} results
+        cp {${sep="," indexes},} results
+    >>>
     runtime{
         cpu: "1"
         memory: "4 GB"
