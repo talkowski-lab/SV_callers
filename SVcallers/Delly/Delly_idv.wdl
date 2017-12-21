@@ -4,20 +4,16 @@ workflow Delly{
     String BLACK
     Array[Array[String]] FAMS=read_tsv(LIST)
     scatter(FAM in FAMS){
-        call doDelly as doDellyDEL{input: Type="DEL",Fam=FAM[0],P1=FAM[1],Fasta=FASTA,Black=BLACK}
-        call doDelly as doDellyDUP{input: Type="DUP",Fam=FAM[0],P1=FAM[1],Fasta=FASTA,Black=BLACK}
-        call doDelly as doDellyINV{input: Type="INV",Fam=FAM[0],P1=FAM[1],Fasta=FASTA,Black=BLACK}
-        call doDelly as doDellyTRA{input: Type="TRA",Fam=FAM[0],P1=FAM[1],Fasta=FASTA,Black=BLACK}
+        call doDelly as doDellyDEL{input: Type="DEL",P1=FAM[1],Fasta=FASTA,Black=BLACK}
+        call doDelly as doDellyDUP{input: Type="DUP",P1=FAM[1],Fasta=FASTA,Black=BLACK}
+        call doDelly as doDellyINV{input: Type="INV",P1=FAM[1],Fasta=FASTA,Black=BLACK}
+        # call doDelly as doDellyTRA{input: Type="TRA",Fam=FAM[0],Fa=FAM[1],Mo=FAM[2],P1=FAM[3],Fasta=FASTA,Black=BLACK} segfault issues
         call gatherfile{input: Fam=FAM[0],DELBCF=doDellyDEL.BCF,DELCSI=doDellyDEL.CSI,
                       DUPBCF=doDellyDUP.BCF,DUPCSI=doDellyDUP.CSI,
-                      INVBCF=doDellyINV.BCF,INVCSI=doDellyINV.CSI,
-                      TRABCF=doDellyTRA.BCF,TRACSI=doDellyTRA.CSI
-    }
+                      INVBCF=doDellyINV.BCF,INVCSI=doDellyINV.CSI
+            }
         }
-
-    # output{
-        
-    # }
+    call gather{input:files=gatherfile.Result,indexes=gatherfile.Index}
 }
 task doDelly{
     String P1
@@ -50,17 +46,33 @@ task gatherfile{
     File DUPCSI
     File INVBCF
     File INVCSI
-    File TRABCF
-    File TRACSI
     command {
         bcftools view ${DELBCF} |grep "#" > header.txt
         bcftools view ${DELBCF} |grep -v "#" > del.vcf
         bcftools view ${DUPBCF} |grep -v "#"> dup.vcf
         bcftools view ${INVBCF} |grep -v "#"> inv.vcf
-        bcftools view ${TRABCF} |grep -v "#"> tra.vcf
         cat header.txt del.vcf dup.vcf inv.vcf tra.vcf | vcf-sort -c | bgzip -c > delly.${Fam}.vcf.gz
         tabix delly.${Fam}.vcf.gz
     }
+    output{
+        File Result="delly.${Fam}.vcf.gz"
+        File Index="delly.${Fam}.vcf.gz.tbi"
+    }
+    runtime{
+        cpu: "1"
+        memory: "4 GB"
+        queue: "short"
+        sla: "-sla miket_sc"
+    }
+}
+task gather{
+    Array[File] files
+    Array[File] indexes
+    command <<<
+        mkdir results
+        cp {${sep="," files},} results
+        cp {${sep="," indexes},} results
+    >>>
     runtime{
         cpu: "1"
         memory: "4 GB"

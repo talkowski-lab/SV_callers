@@ -11,25 +11,7 @@ workflow Collectpesr{
     call merge as mergePE{input: tag="PE",Faresults=svcFa.PE,Moresults=svcMo.PE,P1results=svcP1.PE}
     call merge as mergeSR{input: tag="SR",Faresults=svcFa.SR,Moresults=svcMo.SR,P1results=svcP1.SR}
 }
-# task svcollect{
-    # String bam
-    # String SampleName= basename(bam, ".bam")
-    # command<<<
-        # svtk collect-pesr ${bam} sample_sr.txt sample_pe.txt
-        # awk -v OFS="\t" '{print $0,${SampleName}}' sample_sr.txt > ${SampleName}_sr.txt
-        # awk -v OFS="\t" '{print $0,${SampleName}}' sample_pe.txt > ${SampleName}_pe.txt
-    # >>>
-    # output{
-        # File PE="${SampleName}_pe.txt"
-        # File SR="${SampleName}_sr.txt"
-    # }
-    # runtime {
-        # memory: "8 GB"
-        # cpu: "1"
-        # queue:"medium"
-        # sla:"-sla miket_sc"
-    # }
-# }
+
 task merge{
     String tag
     Array[File] Faresults

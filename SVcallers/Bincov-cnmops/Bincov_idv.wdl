@@ -1,10 +1,51 @@
 import "/data/talkowski/hw878/Standard_workflow/SVcallers/Bincov-cnmops/Bincov_samples.wdl" as BCsample
 workflow Bincov {
     File Filelist
-    File chrlist
-    String Bamfiledir
+    File CHRLIST
     Array[Array[String]] Fams = read_tsv(Filelist)
     scatter(Fam in Fams){
-        call BCsample.BC_sample as BCproband {input: bamfiledir=Bamfiledir,bamfile=Fam[1],Chrlist=chrlist}
+        call BCsample.BC_sample as BCproband {input: bamfile=Fam[1],Chrlist=CHRLIST}
+        call gather{input:P1=BCproband.bc}
+    }
+    call combine{input:Dirs=gather.absdir}
+    output{
+        String DIR=combine.absdir
+    }
+}
+task gather{
+    Array[File] P1
+    command<<<
+        mkdir Bincov_results
+        cp {${sep="," P1},} Bincov_results
+        str=`readlink -f Bincov_results`
+        echo $str>out.tmp
+    >>>
+    output {
+        String absdir = read_string("out.tmp")
+    }
+    runtime {
+        memory: "4 GB"
+        cpu: "1"
+        queue:"short"
+        sla:"-sla miket_sc"
+    }
+}
+task combine{
+    Array[String] Dirs
+    command<<<
+        mkdir Bincov_result
+        cp {${sep="/*," Dirs}/*,} Bincov_result
+        str=`readlink -f Bincov_result`
+        echo $str>out.tmp
+    >>>
+    output {
+        String absdir = read_string("out.tmp")
+        Array[File] bincov=glob("Bincov_result/*")
+    }
+    runtime {
+        memory: "4 GB"
+        cpu: "1"
+        queue:"short"
+        sla:"-sla miket_sc"
     }
 }

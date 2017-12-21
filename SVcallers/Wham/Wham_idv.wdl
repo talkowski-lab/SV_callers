@@ -5,19 +5,21 @@ workflow Wham{
     Array[Array[String]] FAMS=read_tsv(LIST)
     String REFFASTA
     scatter(FAM in FAMS){
-        call RunWham {input: chrlist=CHRS,Fa=FAM[1],RefFasta=REFFASTA,fam=FAM[0]}
+        call RunWham {input: chrlist=CHRS,Fa=FAM[1],Mo=FAM[2],P1=FAM[3],RefFasta=REFFASTA,fam=FAM[0]}
         call fixwham {input: VCF=RunWham.VCF,fam=FAM[0]}
     }
     call gatherfile{input:files=fixwham.result,index=fixwham.index}
-
+    
 }
 task RunWham{
     String fam
     Array[String] chrlist
     String Fa
+    String Mo
+    String P1
     String RefFasta
     command{
-        whamg -c ${sep="," chrlist} -a ${RefFasta} -f ${Fa} > ${fam}.wham.vcf
+        whamg -c ${sep="," chrlist} -a ${RefFasta} -f ${Fa},${Mo},${P1} > ${fam}.wham.vcf
     }
     output{
         File VCF="${fam}.wham.vcf"
@@ -27,13 +29,13 @@ task RunWham{
     cpu: "4"
     queue: "big"
     sla: "-sla miket_sc"
-  }
+  }   
 }
 task fixwham{
     String fam
     File VCF
     command{
-        vcf-sort -c ${VCF} |bgzip -c> wham.${fam}.vcf.gz
+        vcf-sort -c ${VCF}|bgzip -c > wham.${fam}.vcf.gz
         tabix -p vcf wham.${fam}.vcf.gz
     }
     output{
@@ -61,5 +63,3 @@ task gatherfile{
         sla: "-sla miket_sc"
     }
 }
-
-

@@ -1,10 +1,11 @@
 workflow Cnvnator{
     File LIST
-    String cnvnator
+    String Cnvnator
     Array[Array[String]] FAMS=read_tsv(LIST)
     scatter(Fam in FAMS){
-        call RunCNVnator as RunCNVnatorp1{input: CNVnatorscript=cnvnator,BamFile=Fam[1]}
+        call RunCNVnator as RunCNVnatorp1{input: CNVnatorscript=Cnvnator,BamFile=Fam[1]}
         }
+
 }
 task RunCNVnator{
     String CNVnatorscript
@@ -14,7 +15,7 @@ task RunCNVnator{
         ${CNVnatorscript} -b ${BamFile} -o ${SampleName}.cnvnator
     }
     output {
-        File output = "${SampleName}.cnvnator"
+        File out = "${SampleName}.cnvnator"
     }
   runtime {
     memory: "8 GB"
