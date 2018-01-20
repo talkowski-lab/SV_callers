@@ -17,7 +17,7 @@ task svcollect_bam{
     String chr
     String SampleName= basename(bam, ".bam")
     command<<<
-        svtk collect-pesr ${bam} -r ${chr} sample_sr.txt sample_pe.txt
+        svtk collect-pesr ${bam} -r ${chr} ${SampleName} sample_sr.txt sample_pe.txt
         awk -v OFS="\t" '{print $0,"${SampleName}"}' sample_sr.txt > ${SampleName}_sr_${chr}.txt
         awk -v OFS="\t" '{print $0,"${SampleName}"}' sample_pe.txt > ${SampleName}_pe_${chr}.txt
     >>>
