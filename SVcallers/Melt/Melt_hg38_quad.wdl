@@ -108,11 +108,11 @@ task genotype{
         ln ${Fadir}/${Type}/* ${Type}/
         ln ${Modir}/${Type}/* ${Type}/
         ln ${P1dir}/${Type}/* ${Type}/
-        java -Xmx2G -jar ${Melt} GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n /data/talkowski/hw878/AWS/melt/MELTv2.0.2/add_bed_files/1KGP_Hg19/hg19.genes.bed     
-        java -Xmx2G -jar ${Melt} Genotype -bamfile ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt} Genotype -bamfile ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt} Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
-        java -Xmx2G -jar ${Melt} Genotype -bamfile ${S1bam} -t ${S1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n /data/talkowski/hw878/AWS/melt/MELTv2.0.2/add_bed_files/1KGP_Hg19/hg19.genes.bed     
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${S1bam} -t ${S1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         ls ${Type}/*.${Type}.tsv > ${Type}/list.txt
         java -Xmx2G -jar ${Melt} MakeVCF -genotypingdir ${Type} -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
         cp ${Type}/${Type}.final_comp.vcf ${Fam}.${Type}.melt.vcf
