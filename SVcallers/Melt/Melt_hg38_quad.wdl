@@ -114,7 +114,7 @@ task genotype{
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${S1bam} -t ${S1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         ls ${Type}/*.${Type}.tsv > ${Type}/list.txt
-        java -Xmx2G -jar ${Melt} MakeVCF -genotypingdir ${Type} -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
+        java -Xmx2G -jar ${Melt}/MELT.jar MakeVCF -genotypingdir ${Type} -h ${Fasta} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -w ${Type} -p ${Type} -o ${Type}
         cp ${Type}/${Type}.final_comp.vcf ${Fam}.${Type}.melt.vcf
     }
     output{

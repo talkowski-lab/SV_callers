@@ -7,7 +7,7 @@ import "/data/talkowski/hw878/Standard_workflow/SVcallers/Collectpesr/collect_qu
 import "/data/talkowski/hw878/Standard_workflow/QC/Picard/Picard_quad.wdl" as Picard
 import "/data/talkowski/hw878/Standard_workflow/SVcallers/Melt/Melt_hg38_quad.wdl" as Melt
 import "/data/talkowski/hw878/Standard_workflow/SVcallers/Lumpy/Lumpy_quad.wdl" as Lumpy
-
+import "/data/talkowski/hw878/Standard_workflow/SVcallers/Cnmops/cnmops.wdl" as Cnmops
 workflow SV{
     String reffasta
     File list
@@ -17,8 +17,12 @@ workflow SV{
     File cnvnatorscript
     String mantascript
     File refindex
-    String melt
     File lumpy_script
+    File genmatrixPyscript
+    File sexpedfile
+    String melt
+    File autosome
+    File allosome
     call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
     call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
     call Manta.Manta{input:REFFASTA=reffasta,LIST=list,MANTASCRIPT=mantascript}
@@ -28,4 +32,5 @@ workflow SV{
     call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
     call Melt.MELT{input:MELT=melt,Famlist=WGSmetrics.FAM,FASTA=reffasta,FASTAINDEX=refindex}
     call Lumpy.Lumpy{input:LIST=list,lumpyscript=lumpy_script,refFasta=reffasta}
+    call Cnmops.cnmops{input:DIR=Bincov.DIR,Pedfile=sexpedfile,samplepy=genmatrixPyscript,Chromfile=autosome,Allofile=allosome}
 }
