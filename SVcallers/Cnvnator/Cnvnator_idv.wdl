@@ -23,7 +23,7 @@ task RunCNVnator{
     }
   runtime {
     memory: "8 GB"
-    cpu: "1"
+    cpu: "4"
     queue: "big"
     sla: "-sla miket_sc"
   }   
