@@ -16,6 +16,7 @@ workflow SV{
     File blacklist
     File pre_melt
     File cnvnatorscript
+    File convertscript
     String mantascript
     File refindex
     File lumpy_script
@@ -27,7 +28,7 @@ workflow SV{
     call Wham.Wham{input: REFFASTA=reffasta,LIST=list,CHRLIST=chrlist}
     call Delly.Delly{input: FASTA=reffasta,LIST=list,BLACK=blacklist}
     call Manta.Manta{input:REFFASTA=reffasta,LIST=list,MANTASCRIPT=mantascript}
-    call Cnvnator.Cnvnator{input:Cnvnator=cnvnatorscript,LIST=list}
+    call Cnvnator.Cnvnator{input:Cnvnator=cnvnatorscript,CONVERT=convertscript,LIST=list}
     call Bincov.Bincov{input:Filelist=list,CHRLIST=chrlist}
     call collect.Collectpesr{input:LIST=list,Chrlist=chrlist}
     call Picard.WGSmetrics{input:LIST=list,REFFASTA=reffasta,Pre_melt=pre_melt}
