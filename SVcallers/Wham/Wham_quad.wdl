@@ -21,7 +21,7 @@ task RunWham{
     String S1
     String RefFasta
     command{
-        whamg -c ${sep="," chrlist} -a ${RefFasta} -f ${Fa},${Mo},${P1},${S1} > ${fam}.wham.vcf
+        whamg -c ${sep="," chrlist} -a ${RefFasta} -x 4 -f ${Fa},${Mo},${P1},${S1} > ${fam}.wham.vcf
     }
     output{
         File VCF="${fam}.wham.vcf"
@@ -48,7 +48,7 @@ task fixwham{
         cpu: "1"
         memory: "4 GB"
         queue: "short"
-        sla: "-sla miket_sc"
+        sla: ""
     }
 }
 task gatherfile{

@@ -28,7 +28,7 @@ task RunCNVnator{
     memory: "8 GB"
     cpu: "6"
     queue: "big"
-    sla: "-sla miket_sc"
+    sla: ""
   }   
 }
 task gatherfile{

@@ -41,7 +41,7 @@ task preprocess{
         ln ${BamFile} ${Fam}${Role}.bam
         ln ${BamFile}.bai ${Fam}${Role}.bam.bai
         java -jar ${Melt}/MELT.jar Preprocess -bamfile ${Fam}${Role}.bam -h ${Fasta}
-        mv ${Fam}${Role}.bam.disc.bam.bai ${Fam}${Role}.bam.disc.bai
+        # mv ${Fam}${Role}.bam.disc.bam.bai ${Fam}${Role}.bam.disc.bai
         str=`pwd`/${Fam}${Role}.bam
         echo $str>out.tmp
     }
