@@ -2,7 +2,7 @@ import "/data/talkowski/hw878/Standard_workflow/GATK/ScatterGVCF.wdl" as sGVCF
 workflow GATK {
 # This workflow was used to run the GATK pipeline for the twins study. BWA is called single sample 
   File inputSamplesFile
-  Array[Array[File]] inputSamples = read_tsv(inputSamplesFile)
+  Array[String] inputSamples = read_lines(inputSamplesFile)
   File refFasta
   File refIndex
   File refDict
@@ -28,101 +28,81 @@ workflow GATK {
   File kgSNPIndex
   String Samplename
   call GenChrList{input: refindex=refIndex}
-  scatter (sample in inputSamples) {
-    call HaplotypeCaller { 
-      input: 
-          BamFile=sample[1],
-          BamIndex=sample[2],
-          sampleName=sample[0], 
+    call sGVCF.GenotypeGVCFs { 
+      input: GVCFs=inputSamples,
+          sampleName=Samplename,
           RefFasta=refFasta, 
-          RefIndex=refIndex,
-          RefAmb=refAmb,
-          GATK=gatk,
-          RefDict= refDict,
-          RefAmb= refAmb,
-          RefAnn=refAnn,
-          RefBwt=refBwt,
-          RefPac=refPac,
-          RefSa=refSa,
-          KnownSNP=knownSNP,
-          KnownSNPIndex=knownSNPIndex,
-          KnownIndel=knownIndel,
-          KnownIndelIndex=knownIndelIndex,
-    }  
+          GATK=gatk, 
+          RefIndex=refIndex, 
+          RefDict=refDict,
+          ChrList=GenChrList.chrList
   }
-    # call sGVCF.GenotypeGVCFs { 
-      # input: GVCFs=inputSamples,
-          # sampleName=Samplename,
-          # RefFasta=refFasta, 
-          # GATK=gatk, 
-          # RefIndex=refIndex, 
-          # RefDict=refDict,
-          # ChrList=GenChrList.chrList
-  # }
   # call GenotypeGVCFs { 
-  # input: GVCFs=HaplotypeCaller.GVCF, 
+  # input: GVCFs=inputSamples, 
       # sampleName=Samplename, 
       # RefFasta=refFasta, 
       # GATK=gatk, 
       # RefIndex=refIndex, 
       # RefDict=refDict 
   # }
-  # call BuildSNPModel {
-    # input: GATK=gatk,
-      # RefFasta=refFasta,
-      # RefIndex=refIndex,
-      # RefDict=refDict,
-      # RawVariants=GenotypeGVCFs.rawVCF,
-      # RawVariantsIndex=GenotypeGVCFs.rawIndex,
-      # DbSNP=dbSNP,
-      # DbSNPIndex=dbSNPIndex,
-      # OmniSNP=omniSNP,
-      # OmniSNPIndex=omniSNPIndex,
-      # HapmapSNP=hapmapSNP,
-      # HapmapSNPIndex=hapmapSNPIndex,
-      # KGSNP=kgSNP,
-      # KGSNPIndex=kgSNPIndex,
-      # SampleName=Samplename
-  # }
-  # call ApplySNPModel {
-    # input: RawVariants=GenotypeGVCFs.rawVCF,
-      # RawVariantsIndex=GenotypeGVCFs.rawIndex,
-      # GATK=gatk,
-      # RefFasta=refFasta,
-      # RefIndex=refIndex,
-      # RefDict=refDict,
-      # Recal=BuildSNPModel.RECAL,
-      # Tranche=BuildSNPModel.TRANCHE,
-      # SampleName=Samplename
-  # }
-  # call BuildIndelModel {
-    # input: GATK=gatk,
-      # RefFasta=refFasta,
-      # RefIndex=refIndex,
-      # RefDict=refDict,
-      # RawIndelVcf=ApplySNPModel.VCF,
-      # RawIndelVcfIndex=ApplySNPModel.IDX,
-      # MillsIndel=millsIndel,
-      # MillsIndelIndex=millsIndelIndex,
-      # SampleName=Samplename
-  # }
-  # call ApplyIndelModel {
-    # input: RawIndelVcf=ApplySNPModel.VCF,
-      # RawIndelVcfIndex=ApplySNPModel.IDX,
-      # GATK=gatk,
-      # RefFasta=refFasta,
-      # RefIndex=refIndex,
-      # RefDict=refDict,
-      # Recal=BuildIndelModel.RECAL,
-      # Tranche=BuildIndelModel.TRANCHE,
-      # SampleName=Samplename
-  # }
+  call BuildSNPModel {
+    input: GATK=gatk,
+      RefFasta=refFasta,
+      RefIndex=refIndex,
+      RefDict=refDict,
+      RawVariants=GenotypeGVCFs.rawVCF,
+      RawVariantsIndex=GenotypeGVCFs.rawIndex,
+      DbSNP=dbSNP,
+      DbSNPIndex=dbSNPIndex,
+      OmniSNP=omniSNP,
+      OmniSNPIndex=omniSNPIndex,
+      HapmapSNP=hapmapSNP,
+      HapmapSNPIndex=hapmapSNPIndex,
+      KGSNP=kgSNP,
+      KGSNPIndex=kgSNPIndex,
+      SampleName=Samplename
+  }
+  call ApplySNPModel {
+    input: RawVariants=GenotypeGVCFs.rawVCF,
+      RawVariantsIndex=GenotypeGVCFs.rawIndex,
+      GATK=gatk,
+      RefFasta=refFasta,
+      RefIndex=refIndex,
+      RefDict=refDict,
+      Recal=BuildSNPModel.RECAL,
+      Tranche=BuildSNPModel.TRANCHE,
+      SampleName=Samplename
+  }
+  call BuildIndelModel {
+    input: GATK=gatk,
+      RefFasta=refFasta,
+      RefIndex=refIndex,
+      RefDict=refDict,
+      RawIndelVcf=ApplySNPModel.VCF,
+      RawIndelVcfIndex=ApplySNPModel.IDX,
+      MillsIndel=millsIndel,
+      MillsIndelIndex=millsIndelIndex,
+      SampleName=Samplename
+  }
+  call ApplyIndelModel {
+    input: RawIndelVcf=ApplySNPModel.VCF,
+      RawIndelVcfIndex=ApplySNPModel.IDX,
+      GATK=gatk,
+      RefFasta=refFasta,
+      RefIndex=refIndex,
+      RefDict=refDict,
+      Recal=BuildIndelModel.RECAL,
+      Tranche=BuildIndelModel.TRANCHE,
+      SampleName=Samplename
+  }
   
 }
+
+
 task GenChrList{
     File refindex
     command{
-        cut -f 1 ${refindex}|grep -v "GL" >chrlist.txt
+        cut -f 1 ${refindex}|grep -v "GL" |grep -v "HLA"|grep -v "chrUn" |grep -v "alt"|grep -v "random" >chrlist.txt
     }
     output{
         File chrList="chrlist.txt"
@@ -133,78 +113,6 @@ task GenChrList{
         queue:"short"
     }
 }
-task HaplotypeCaller {
-  File BamFile
-  File BamIndex
-  File RefFasta
-  File RefIndex
-  File RefDict
-  File RefAmb
-  File RefAnn
-  File RefBwt
-  File RefPac
-  File RefSa
-  File GATK
-  File KnownSNP
-  File KnownSNPIndex
-  File KnownIndelIndex
-  File KnownIndel
-  String sampleName
-  command {
-    java -Xmx8000m -Djava.io.tmpdir=`pwd`/tmp -jar ${GATK} \
-        -T BaseRecalibrator \
-        -nct 4 \
-        -R ${RefFasta} \
-        -I ${BamFile} \
-        -knownSites ${KnownSNP} \
-        -knownSites ${KnownIndel} \
-        -o ${sampleName}_recal_data.table
-    java -Xmx8000m -jar -Djava.io.tmpdir=`pwd`/tmp ${GATK} \
-        -T HaplotypeCaller \
-        -ERC GVCF \
-        -R ${RefFasta} \
-        -I ${BamFile}  \
-        -BQSR ${sampleName}_recal_data.table \
-        -o ${sampleName}_rawLikelihoods.g.vcf 
-  }
-  output {
-    File GVCF = "${sampleName}_rawLikelihoods.g.vcf"
-  }
-  runtime {
-    memory: "20 GB"
-    cpu: "4"
-    queue: "big"
-    sla: "-sla miket_sc"
-  }
-}
-# task GenotypeGVCFs {
-
-  # File GATK
-  # File RefFasta
-  # File RefIndex
-  # File RefDict
-
-  # String sampleName
-  # Array[File] GVCFs
-
-  # command {
-    # java -jar ${GATK} \
-        # -T GenotypeGVCFs \
-        # -R ${RefFasta} \
-        # -V ${sep=" -V " GVCFs} \
-        # -o ${sampleName}_rawVariants.vcf
-  # }
-  # output {
-    # File rawVCF = "${sampleName}_rawVariants.vcf"
-    # File rawIndex = "${sampleName}_rawVariants.vcf.idx"
-  # }
-  # runtime {
-    # memory: "20 GB"
-    # cpu: "4"
-    # queue:"big"
-  # }
-  
-# }
 task BuildSNPModel {
 
   File GATK
@@ -248,7 +156,7 @@ task BuildSNPModel {
     runtime {
     memory: "8 GB"
     cpu: "1"
-    queue: "medium"
+    queue: "big"
   }
   output {
     File TRANCHE = "${SampleName}_recalibrate_SNP.tranches"
@@ -281,7 +189,7 @@ task ApplySNPModel {
   runtime {
     memory: "8 GB"
     cpu: "1"
-    queue: "medium"
+    queue: "big"
   }
   output {
     File VCF = "${SampleName}_recalibrated_snps_raw_indels.vcf"
@@ -321,7 +229,7 @@ task BuildIndelModel {
     runtime {
         memory: "8 GB"
         cpu: "1"
-        queue:"medium"
+        queue:"big"
     }
     output {
         File RECAL = "${SampleName}_recalibrate_INDEL.recal"
@@ -348,14 +256,16 @@ task ApplyIndelModel {
         -recalFile ${Recal}\
         -tranchesFile ${Tranche} \
         -o ${SampleName}_recalibrated_variants.vcf 
+    bgzip ${SampleName}_recalibrated_variants.vcf 
+    tabix ${SampleName}_recalibrated_variants.vcf.gz
         }
     runtime {
     memory: "8 GB"
     cpu: "1"
-    queue: "medium"
+    queue: "big"
     }
     output {
-        File VCF = "${SampleName}_recalibrated_variants.vcf"
-        File IDX = "${SampleName}_recalibrated_variants.vcf.idx"
+        File VCF = "${SampleName}_recalibrated_variants.vcf.gz"
+        File IDX = "${SampleName}_recalibrated_variants.vcf.gz.tbi"
     }
 }

@@ -5,6 +5,7 @@ workflow Lumpy {
     # File cnvnatorscript
     # File mantascript
     String refFasta
+    File BLACK
     # File refIndex
     scatter(FAM in FAMS){
         call Get_pesr as Get_pesr_P1{input: BamFile=FAM[1], Fam=FAM[0]} 
@@ -13,7 +14,7 @@ workflow Lumpy {
             PeBamIdx=[Get_pesr_P1.PEidx],
             SrBam=[Get_pesr_P1.SR],
             SrBamIdx=[Get_pesr_P1.SRidx],
-            Bam=[Get_pesr_P1.BAM] }
+            Bam=[Get_pesr_P1.BAM] ,black=BLACK}
     }
     call gatherfile{input:files=RunLumpy.LumpyCall,indexes=RunLumpy.Index}
 }
@@ -62,6 +63,7 @@ task Get_pesr{
 }
 task RunLumpy{
     File LumpyScript
+    String black
     Array[File] PeBam
     Array[File] SrBam
     Array[File] Bam
@@ -71,7 +73,7 @@ task RunLumpy{
     command{
         module load svtyper
         module load anaconda/4.0.5
-        ${LumpyScript} -b ${sep="," Bam} -p ${sep="," PeBam} -s ${sep="," SrBam} -o ${SampleName}
+        ${LumpyScript} -z ${black} -b ${sep="," Bam} -p ${sep="," PeBam} -s ${sep="," SrBam} -o ${SampleName}
         vcf-sort ${SampleName}.vcf |bgzip -c > lumpy.${SampleName}.vcf.gz
         tabix lumpy.${SampleName}.vcf.gz
     }

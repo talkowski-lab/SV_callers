@@ -12,7 +12,7 @@ workflow MELT{
         call preprocess as P1pre {input: Melt=MELT,BamFile=Family[3],Fasta=FASTA,FastaIndex=FASTAINDEX,Fam=Family[0],Role="p1"}
         call IndivAnalysis as P1Idv{input: Melt=MELT,Bamdir=P1pre.Bamdir,Fam=Family[0],Fasta=FASTA,FastaIndex=FASTAINDEX,Picard=Family[7]}
         call preprocess as S1pre {input: Melt=MELT,BamFile=Family[4],Fasta=FASTA,FastaIndex=FASTAINDEX,Fam=Family[0],Role="s1"}
-        call IndivAnalysis as S1Idv{input: Melt=MELT,Bamdir=P1pre.Bamdir,Fam=Family[0],Fasta=FASTA,FastaIndex=FASTAINDEX,Picard=Family[8]}
+        call IndivAnalysis as S1Idv{input: Melt=MELT,Bamdir=S1pre.Bamdir,Fam=Family[0],Fasta=FASTA,FastaIndex=FASTAINDEX,Picard=Family[8]}
         
         call genotype as ALUgeno{input: Melt=MELT,Fabam=Fapre.Bamdir,Mobam=Mopre.Bamdir,P1bam=P1pre.Bamdir,S1bam=S1pre.Bamdir,Fam=Family[0],
                                 Type="ALU",
@@ -108,7 +108,7 @@ task genotype{
         ln ${Fadir}/${Type}/* ${Type}/
         ln ${Modir}/${Type}/* ${Type}/
         ln ${P1dir}/${Type}/* ${Type}/
-        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n /data/talkowski/hw878/AWS/melt/MELTv2.0.2/add_bed_files/1KGP_Hg19/hg19.genes.bed     
+        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/1KGP_Hg19/hg19.genes.bed     
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}

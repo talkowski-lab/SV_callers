@@ -27,6 +27,7 @@ PE_FLAG=0
 SR_FLAG=0
 OUT_DIR="."
 LUMPY_DIR=/PHShome/hw878/Software/lumpy-sv
+BLACKLIST=/data/talkowski/rlc47/src/b37.lumpy.exclude.4-13.bed
 OUT="lumpy_output"
 WEIGHT=4
 Z=4
@@ -41,7 +42,7 @@ then
     help_message
     exit 1
 else
-    while getopts ":hb:s:p:m:b:t:r:o:l:d:" opt; do
+    while getopts ":hb:s:p:m:z:t:r:o:d:l:" opt; do
         case $opt in
             h ) help_message
                 exit 0 ;;
@@ -62,6 +63,8 @@ else
                 pe_array=($OPTARG) ;; # use the split+glob operator
             m ) echo "min_mapping_threshold = $OPTARG" 
                 MIN_MAP_T=$OPTARG ;;
+            z ) echo "shadow list" 
+                BLACKLIST=$OPTARG ;;
             t ) echo "trim threshold = $OPTARG" 
                 TT=$OPTARG ;;
             r ) echo "read length = $OPTARG" 
@@ -135,7 +138,7 @@ unset IFS
 sr_option=$(echo "${sr_option_array[@]}")
 pe_option=$(echo "${pe_option_array[@]}")
 echo $sr_option
-cmd="lumpy -mw $WEIGHT -tt $TT -t tmp -x /data/talkowski/rlc47/src/b37.lumpy.exclude.4-13.bed $sr_option $pe_option > $OUT_DIR/$OUT.vcf"
+cmd="lumpy -mw $WEIGHT -tt $TT -t tmp -x $BLACKLIST $sr_option $pe_option > $OUT_DIR/$OUT.vcf"
 echo $cmd
 eval $cmd
 # genocmd_array=("cat $OUT_DIR/$OUT.vcf|")

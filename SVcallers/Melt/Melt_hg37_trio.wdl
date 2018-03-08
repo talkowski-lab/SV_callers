@@ -65,7 +65,7 @@ task IndivAnalysis{
     command{
         mkdir Work
         mkdir Work/me_refs/
-        cp ${Melt}/me_refs/Hg38/*.zip Work/me_refs/.
+        cp ${Melt}/me_refs/1KGP_Hg19/*.zip Work/me_refs/.
         ls Work/me_refs/*.zip >Work/me_refs/mei_list.txt
         java -Xmx6G -jar ${Melt}/MELT.jar IndivAnalysis -c ${Picard} -bamfile ${Bamdir} -w Work -t Work/me_refs/mei_list.txt -h ${Fasta}
         mkdir ALU
@@ -105,7 +105,7 @@ task genotype{
         ln ${Fadir}/${Type}/* ${Type}/
         ln ${Modir}/${Type}/* ${Type}/
         ln ${P1dir}/${Type}/* ${Type}/
-        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/Hg38/Hg38.genes.bed     
+        java -Xmx2G -jar ${Melt}/MELT.jar GroupAnalysis -discoverydir ${Type} -w ${Type} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -n ${Melt}/add_bed_files/1KGP_Hg19/hg19.genes.bed    
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Fabam} -t ${Fadir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${Mobam} -t ${Modir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}
         java -Xmx2G -jar ${Melt}/MELT.jar Genotype -bamfile ${P1bam} -t ${P1dir}/Work/me_refs/${Type}_MELT.zip -h ${Fasta} -w ${Type} -p ${Type}

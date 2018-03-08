@@ -2,9 +2,10 @@ workflow Cnvnator{
     File LIST
     String Cnvnator
     String CONVERT
+    String REFDIR
     Array[Array[String]] FAMS=read_tsv(LIST)
     scatter(Fam in FAMS){
-        call RunCNVnator as RunCNVnatorp1{input: CNVnatorscript=Cnvnator,convert=CONVERT,BamFile=Fam[2]}
+        call RunCNVnator as RunCNVnatorp1{input: CNVnatorscript=Cnvnator,convert=CONVERT,BamFile=Fam[2],refdir=REFDIR}
         }
     call gatherfile{input: DELp1=RunCNVnatorp1.DEL,DUPp1=RunCNVnatorp1.DUP}
 }
@@ -12,9 +13,10 @@ task RunCNVnator{
     String CNVnatorscript
     String BamFile
     String convert
+    String refdir
     String SampleName= basename(BamFile, ".bam") 
     command{
-        ${CNVnatorscript} -b ${BamFile} -o ${SampleName}.cnvnator
+        ${CNVnatorscript} -b ${BamFile} -o ${SampleName}.cnvnator -r ${refdir}
         python ${convert} ${SampleName}.cnvnator ${SampleName}
     }
     output {
